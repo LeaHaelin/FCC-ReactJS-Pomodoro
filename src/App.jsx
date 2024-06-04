@@ -81,16 +81,16 @@ function App() {
     <>
       <div className="pomodoro">
         <div className="display">
-          <h2 className="label" id="timer-label">
+          <h2 className="display-label" id="timer-label">
             {isSession ? "Session" : "Break"} Time
           </h2>
-          <p className="timer" id="time-left">
+          <p className="time-screen" id="time-left">
             {formatTime(modeSec)}
           </p>
         </div>
         <div className="buttons">
           <button
-            className="play-pause"
+            className="play-pause btn"
             id="start_stop"
             onClick={activeHandler}
           >
@@ -101,7 +101,7 @@ function App() {
               height="24"
             />
           </button>
-          <button id="reset" onClick={resetHandler}>
+          <button className="reset btn" id="reset" onClick={resetHandler}>
             <img src={reset} alt="reset icon" width="24" height="24" />
           </button>
         </div>
@@ -110,45 +110,49 @@ function App() {
             <h3 className="label" id="break-label">
               Break Length
             </h3>
-            <button
-              className="break_minus"
-              id="break-decrement"
-              onClick={timeControler}
-            >
-              ﹣
-            </button>
-            <p className="break minutes" id="break-length">
-              {breakTime / 60}
-            </p>
-            <button
-              className="break_plus"
-              id="break-increment"
-              onClick={timeControler}
-            >
-              +
-            </button>
+            <div className="break-set">
+              <button
+                className="minus break_minus"
+                id="break-decrement"
+                onClick={timeControler}
+              >
+                ﹣
+              </button>
+              <p className="minutes" id="break-length">
+                {breakTime / 60}
+              </p>
+              <button
+                className="plus break_plus"
+                id="break-increment"
+                onClick={timeControler}
+              >
+                +
+              </button>
+            </div>
           </div>
           <div className="session">
             <h3 className="label" id="session-label">
               Session Length
             </h3>
-            <button
-              className="session_minus"
-              id="session-decrement"
-              onClick={timeControler}
-            >
-              ﹣
-            </button>
-            <p className="session minutes" id="session-length">
-              {sessionTime / 60}
-            </p>
-            <button
-              className="session_plus"
-              id="session-increment"
-              onClick={timeControler}
-            >
-              +
-            </button>
+            <div className="session-set">
+              <button
+                className="minus session_minus"
+                id="session-decrement"
+                onClick={timeControler}
+              >
+                ﹣
+              </button>
+              <p className="minutes" id="session-length">
+                {sessionTime / 60}
+              </p>
+              <button
+                className="plus session_plus"
+                id="session-increment"
+                onClick={timeControler}
+              >
+                +
+              </button>
+            </div>
           </div>
         </div>
       </div>
