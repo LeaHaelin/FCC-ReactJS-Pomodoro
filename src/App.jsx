@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import start from "./assets/icons/play.svg";
 import pause from "./assets/icons/pause.svg";
 import reset from "./assets/icons/reset.svg";
+import beep from "./assets/audio/beep.mp3";
 
 import "./App.css";
 
@@ -11,11 +12,13 @@ function App() {
   const [isActive, setIsActive] = useState(false); // to check if the pomodoro is active or paused
   const [modeSec, setModeSec] = useState(sessionTime); //to switch the modes
   const [isSession, setIsSession] = useState(true); // to check if it is session mode or break mode
+  const beepSound = useRef(null);
 
   const activeHandler = () => {
     setIsActive(!isActive);
   };
 
+  //display time number format to be 00:00
   const formatTime = (modeSec) => {
     const min = Math.floor(modeSec / 60);
     const remainSec = Math.floor(modeSec % 60);
@@ -24,27 +27,38 @@ function App() {
     }${remainSec}`;
   };
 
-  console.log(formatTime);
-
+  //switch sessionTime and breakTime
   useEffect(() => {
     if (isSession) {
       setModeSec(sessionTime);
     } else {
       setIsSession(false);
       setModeSec(breakTime);
-      console.log("whaaaa");
     }
   }, [sessionTime, breakTime, isSession]);
 
+  //the beep sound
+  useEffect(() => {
+    if (modeSec === 0) {
+      if (beepSound) {
+        beepSound.current.currentTime = 0;
+        beepSound.current.play();
+      } else {
+        beepSound.current.pause();
+      }
+    }
+  }, [modeSec]);
+
+  //timer
   useEffect(() => {
     let interval;
     if (isActive) {
       interval = setInterval(() => {
         setModeSec((prevSec) => {
-          if (prevSec <= 1) {
+          if (prevSec < 1) {
             clearInterval(interval);
             setIsSession(!isSession); // Toggle between session and break * (prevIsSession) => !prevIsSession
-            return isSession ? breakTime : sessionTime;
+            return isSession ? sessionTime : breakTime;
           } else {
             return prevSec - 1;
           }
@@ -60,11 +74,11 @@ function App() {
     const className = e.target.className;
     if (className.includes("break_minus") && breakTime > 1 * 60) {
       setBreakTime(breakTime - 60);
-    } else if (className.includes("break_plus") && breakTime <= 60 * 60) {
+    } else if (className.includes("break_plus") && breakTime < 60 * 60) {
       setBreakTime(breakTime + 60);
-    } else if (className.includes("session_minus") && sessionTime >= 2 * 60) {
+    } else if (className.includes("session_minus") && sessionTime > 1 * 60) {
       setSessionTime(sessionTime - 60);
-    } else if (className.includes("session_plus") && sessionTime <= 59 * 60) {
+    } else if (className.includes("session_plus") && sessionTime < 60 * 60) {
       setSessionTime(sessionTime + 60);
     }
   };
@@ -75,6 +89,10 @@ function App() {
     setModeSec(sessionTime);
     setIsActive(false);
     setIsSession(true);
+    if (beepSound.current) {
+      beepSound.current.pause();
+      beepSound.current.currentTime = 0;
+    }
   };
 
   return (
@@ -87,6 +105,7 @@ function App() {
           <p className="time-screen" id="time-left">
             {formatTime(modeSec)}
           </p>
+          <audio id="beep" ref={beepSound} src={beep}></audio>
         </div>
         <div className="buttons">
           <button
